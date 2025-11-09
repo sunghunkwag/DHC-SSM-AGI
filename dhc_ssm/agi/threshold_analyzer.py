@@ -1,13 +1,9 @@
 """
-Threshold Analysis for Recursive Self-Improvement (RSI)
-
-Analyzes whether the system has crossed the critical threshold (Γ★) required
-for recursive self-improvement, based on epistemic and aleatoric uncertainties.
+RSIThresholdAnalyzer: Complete Threshold Analysis with Diagnostics and Model Integration
 """
-
 import torch
 import torch.nn as nn
-from typing import Dict, List, Optional
+from typing import List, Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
 
@@ -24,6 +20,8 @@ class ThresholdMeasurement:
     aleatoric: float
     status: ThresholdStatus
     confidence: float
+    converged: bool
+    trend: str
 
 class RSIThresholdAnalyzer(nn.Module):
     def __init__(self, history_length: int = 100):
@@ -33,8 +31,8 @@ class RSIThresholdAnalyzer(nn.Module):
 
     def compute_gamma(self, epistemic: torch.Tensor, aleatoric: torch.Tensor) -> float:
         eps = 1e-8
-        e = epistemic.mean().item() if epistemic.numel() > 1 else epistemic.item()
-        a = aleatoric.mean().item() if aleatoric.numel() > 1 else aleatoric.item()
+        e = float(epistemic.mean().item())
+        a = float(aleatoric.mean().item())
         er = 1.0 - e
         gamma = er / (er + a + eps)
         return max(0.0, min(1.0, gamma))
@@ -43,7 +41,19 @@ class RSIThresholdAnalyzer(nn.Module):
         if len(self.measurements) < 10:
             return 0.7
         gammas = [m.gamma for m in self.measurements[-50:]]
-        return torch.tensor(gammas).quantile(0.9).item()
+        return float(torch.tensor(gammas).quantile(0.9).item())
+
+    def analyze_trend(self, window: Optional[int] = None) -> Dict[str, any]:
+        if not self.measurements:
+            return {'trend': 'none', 'slope': 0.0, 'volatility': 0.0, 'converged': False}
+        window = window or min(20, len(self.measurements))
+        recent = self.measurements[-window:]
+        gammas = torch.tensor([m.gamma for m in recent])
+        slope = (gammas[-1] - gammas[0]) / len(gammas)
+        volatility = float(gammas.std().item())
+        converged = volatility < 0.03
+        trend = 'increasing' if slope > 0.01 else 'decreasing' if slope < -0.01 else 'stable'
+        return { 'trend': trend, 'slope': float(slope), 'volatility': volatility, 'converged': converged }
 
     def check_threshold(self, gamma: float, gamma_star: float) -> ThresholdStatus:
         tol = 0.05
@@ -51,16 +61,31 @@ class RSIThresholdAnalyzer(nn.Module):
             return ThresholdStatus.AT
         elif gamma >= gamma_star:
             return ThresholdStatus.ABOVE
-        else:
-            return ThresholdStatus.BELOW
+        return ThresholdStatus.BELOW
 
     def measure(self, epistemic: torch.Tensor, aleatoric: torch.Tensor) -> ThresholdMeasurement:
         gamma = self.compute_gamma(epistemic, aleatoric)
         gamma_star = self.estimate_gamma_star()
         status = self.check_threshold(gamma, gamma_star)
         confidence = min(len(self.measurements)/self.history_length, 1.0)
-        tm = ThresholdMeasurement(gamma, gamma_star, epistemic.mean().item(), aleatoric.mean().item(), status, confidence)
+        analysis = self.analyze_trend()
+        tm = ThresholdMeasurement(gamma, gamma_star, float(epistemic.mean().item()), float(aleatoric.mean().item()), status, confidence, analysis['converged'], analysis['trend'])
         self.measurements.append(tm)
         if len(self.measurements) > self.history_length:
             self.measurements.pop(0)
         return tm
+
+    def diagnostics(self) -> Dict[str, any]:
+        if not self.measurements:
+            return {'status': 'no_data'}
+        last = self.measurements[-1]
+        analysis = self.analyze_trend()
+        return {
+            'current_gamma': last.gamma,
+            'gamma_star_estimate': last.gamma_star,
+            'threshold_status': last.status.value,
+            'confidence': last.confidence,
+            'trend': analysis['trend'],
+            'converged': analysis['converged'],
+            'measurements': len(self.measurements),
+        }
