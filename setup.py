@@ -1,14 +1,16 @@
 """
-Setup configuration for DHC-SSM Enhanced Architecture v3.0
+Setup configuration for DHC-SSM Enhanced Architecture v3.1.0
 
 Deterministic Hierarchical Causal State Space Model
-A production-ready AI architecture with deterministic learning approach.
+A production-ready AI architecture with deterministic learning approach,
+recursive self-improvement, and comprehensive uncertainty quantification.
 
-v3.0 Features:
-- Fixed learning mechanism (0% → 100% success rate)
-- Modern PyTorch 2.9+ best practices
-- Comprehensive testing and documentation
-- Production-ready training infrastructure
+v3.1.0 Features:
+- Fixed type safety (Dict[str, Any])
+- Real uncertainty quantification integration
+- Adaptive statistical thresholds
+- Comprehensive testing with CI/CD
+- Production-ready with realistic dependencies
 - O(n) linear complexity maintained
 """
 
@@ -19,14 +21,14 @@ from pathlib import Path
 readme_file = Path(__file__).parent / "README.md"
 long_description = readme_file.read_text(encoding="utf-8")
 
-# Core requirements
+# Core requirements (must match requirements.txt)
 requirements = [
-    "torch>=2.9.0",
-    "torchvision>=0.24.0",
-    "torch-geometric>=2.7.0",
-    "numpy>=1.26.0",
-    "scipy>=1.16.0",
-    "scikit-learn>=1.7.0",
+    "torch>=2.0.0,<3.0.0",
+    "torchvision>=0.15.0,<1.0.0",
+    "torch-geometric>=2.3.0",
+    "numpy>=1.24.0,<2.0.0",
+    "scipy>=1.10.0",
+    "scikit-learn>=1.3.0",
     "matplotlib>=3.5.0",
     "seaborn>=0.11.0",
     "tqdm>=4.64.0",
@@ -52,19 +54,20 @@ dev_requirements = [
 ]
 
 setup(
-    name="dhc-ssm-architecture",
-    version="3.0.0",
-    author="DHC-SSM Development Team",
-    author_email="dhc-ssm@example.com",
-    description="DHC-SSM v3.0 - Deterministic O(n) AI Architecture (Production Ready)",
+    name="dhc-ssm-agi",
+    version="3.1.0",
+    author="Sung hun kwag",
+    author_email="sunghunkwag@gmail.com",
+    description="DHC-SSM v3.1 - Deterministic O(n) AGI Architecture with Recursive Self-Improvement",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/dhc-ssm-v3",
+    url="https://github.com/sunghunkwag/DHC-SSM-AGI",
     project_urls={
-        "Bug Reports": "https://github.com/yourusername/dhc-ssm-v3/issues",
-        "Source": "https://github.com/yourusername/dhc-ssm-v3",
-        "Documentation": "https://github.com/yourusername/dhc-ssm-v3/blob/main/README.md",
-        "Changelog": "https://github.com/yourusername/dhc-ssm-v3/releases",
+        "Bug Reports": "https://github.com/sunghunkwag/DHC-SSM-AGI/issues",
+        "Source": "https://github.com/sunghunkwag/DHC-SSM-AGI",
+        "Documentation": "https://github.com/sunghunkwag/DHC-SSM-AGI/blob/master/README.md",
+        "Changelog": "https://github.com/sunghunkwag/DHC-SSM-AGI/blob/master/CHANGELOG.md",
+        "CI/CD": "https://github.com/sunghunkwag/DHC-SSM-AGI/actions",
     },
     packages=find_packages(exclude=["tests", "tests.*", "examples", "docs"]),
     classifiers=[
@@ -79,6 +82,7 @@ setup(
         "Programming Language :: Python :: 3.12",
         "Operating System :: OS Independent",
         "Natural Language :: English",
+        "Typing :: Typed",
     ],
     python_requires=">=3.11",
     install_requires=requirements,
@@ -90,11 +94,14 @@ setup(
         "artificial intelligence",
         "machine learning",
         "deep learning",
+        "AGI",
         "state space models",
         "causal reasoning",
         "deterministic learning",
         "graph neural networks",
-        "multi-objective optimization",
+        "uncertainty quantification",
+        "recursive self-improvement",
+        "meta-learning",
         "O(n) complexity",
         "transformer alternative",
         "production ready",
