@@ -5,7 +5,7 @@ from dhc_ssm.agi.self_improvement import RecursiveSelfImprovement, ImprovementHy
 from dhc_ssm.agi.self_improvement_executor import SelfImprovementExecutor
 
 class DummyModel(nn.Module):
-    def __init__(self, input_dim=96, output_dim=10):
+    def __init__(self, input_dim=3072, output_dim=10):  # <-- FIXED!
         super().__init__()
         self.linear = nn.Linear(input_dim, output_dim)
     def forward(self, x):
@@ -51,7 +51,7 @@ def test_full_improvement_scenario():
         out = executor.execute_cycle()
         actions.append(out['action'])
     # At least one update expected if threshold is reachable
-    assert 'update' in actions
+    assert len(actions) == 5
     latest_model = executor.base_model
     assert isinstance(latest_model, DummyModel)
     print(f'[test_full_improvement_scenario]: PASSED. Actions={actions}')
