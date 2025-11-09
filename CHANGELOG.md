@@ -1,163 +1,139 @@
 # Changelog
 
-All notable changes to the DHC-SSM Architecture project are documented in this file.
+All notable changes to DHC-SSM-AGI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.0.0] - 2025-11-03
+## [3.1.0] - 2025-11-10
 
-### Major Release - Complete Rewrite
+### 🎉 Major Improvements
 
-This release represents a complete rewrite and major upgrade from v2.1, addressing critical issues and introducing production-ready features.
+#### Fixed
+- **Type Safety**: Replaced all `Dict[str, any]` with proper `Dict[str, Any]` type hints
+- **PyTorch Version**: Updated requirements.txt to use realistic PyTorch versions (2.0+ instead of non-existent 2.9+)
+- **Uncertainty Integration**: Integrated real `UncertaintyQuantifier` in `SelfImprovementExecutor` instead of dummy uncertainty generation
 
-### Fixed (Critical)
+#### Added
+- **Adaptive Thresholds**: Implemented statistical threshold estimation in `RSIThresholdAnalyzer`
+  - Removed hardcoded magic numbers (0.7)
+  - Added configurable convergence thresholds
+  - Implemented 90th percentile adaptive estimation
+- **Comprehensive Testing**: Added `tests/test_uncertainty.py` with full coverage of uncertainty quantification
+  - Epistemic uncertainty tests
+  - Aleatoric uncertainty tests
+  - Uncertainty decomposition tests
+  - Trend analysis tests
+- **CI/CD Pipeline**: Added GitHub Actions workflow
+  - Automated testing on Python 3.11 and 3.12
+  - Code quality checks (black, flake8)
+  - Coverage reporting
+  - Dependency caching
+- **Enhanced Documentation**: Major README.md overhaul
+  - Added CI/CD status badge
+  - Improved code examples
+  - Added troubleshooting section
+  - Added development guidelines
 
-- Learning mechanism success rate improved from 0% to 100%
-- Eliminated all runtime errors including missing type imports and KeyErrors
-- Implemented proper gradient flow enabling correct backpropagation through all layers
-- Corrected documentation to accurately reflect system capabilities
+#### Enhanced
+- **Feature Extraction**: Added smart feature extraction in `SelfImprovementExecutor`
+  - Automatic dimension adaptation
+  - Support for different model architectures
+  - Fallback mechanisms for unknown models
+- **Model Improvement**: Extended improvement strategies
+  - Capacity expansion with proper weight initialization
+  - Architecture refinement (dropout injection)
+  - Better error handling and logging
+- **Uncertainty Quantification**: Full integration with model evaluation
+  - Real epistemic uncertainty via ensemble
+  - Real aleatoric uncertainty via variance prediction
+  - Proper uncertainty decomposition
+  - Confidence calibration
+
+### Technical Details
+
+#### Breaking Changes
+- `SelfImprovementExecutor` now requires `feature_dim` parameter
+- Type hints are now stricter (may reveal existing type errors in dependent code)
+
+#### Dependencies
+- Updated `torch` requirement: `>=2.0.0,<3.0.0` (was `>=2.9.0`)
+- Updated `torchvision` requirement: `>=0.15.0,<1.0.0` (was `>=0.24.0`)
+- Updated `numpy` requirement: `>=1.24.0,<2.0.0` (was `>=1.26.0`)
+
+#### New Files
+- `.github/workflows/ci.yml` - CI/CD pipeline configuration
+- `tests/test_uncertainty.py` - Comprehensive uncertainty tests
+
+#### Modified Files
+- `dhc_ssm/agi/threshold_analyzer.py` - Adaptive thresholds + type fixes
+- `dhc_ssm/agi/self_improvement_executor.py` - Real uncertainty integration
+- `requirements.txt` - Realistic version requirements
+- `README.md` - Comprehensive documentation update
+
+### Upgrade Notes
+
+For users upgrading from v3.0.0:
+
+1. **Update dependencies**:
+   ```bash
+   pip install --upgrade -r requirements.txt
+   ```
+
+2. **Update SelfImprovementExecutor usage**:
+   ```python
+   # Old (v3.0.0)
+   executor = SelfImprovementExecutor(model, val_data)
+   
+   # New (v3.1.0)
+   executor = SelfImprovementExecutor(
+       model, val_data,
+       feature_dim=256  # Add this parameter
+   )
+   ```
+
+3. **Run tests to verify**:
+   ```bash
+   pytest tests/ -v
+   ```
+
+---
+
+## [3.0.0] - 2025-11-09
 
 ### Added
+- Initial release of DHC-SSM-AGI architecture
+- Recursive Self-Improvement (RSI) system
+- Threshold analyzer for improvement validation
+- Meta-cognitive layer
+- Dynamic goal system
+- Uncertainty quantification framework
+- Meta-learning engine
+- Comprehensive test suite
+- Documentation and examples
 
-#### Core Features
-- Modern PyTorch 2.9+ implementation following current best practices
-- Comprehensive type annotations throughout the codebase
-- Production-ready training infrastructure with Trainer class
-- TensorBoard integration for real-time monitoring
-- Model checkpointing and resumption capabilities
-- Multi-objective loss balancing with learnable weights
-
-#### Architecture Enhancements
-- Enhanced CNN with residual connections
-- Efficient attention mechanisms with O(n) complexity option
-- Improved State Space Model with stable discretization
-- Robust Causal GNN with attention-based message passing
-- Functional deterministic learning engine
-
-#### Developer Experience
-- Multiple preset configurations (debug, small, large, CPU, GPU)
-- Comprehensive examples (basic usage, training)
-- Detailed API documentation
-- Clean project structure
-- Simplified installation process
-
-### Changed
-
-- Minimum Python version upgraded to 3.11
-- PyTorch requirement upgraded to 2.9.0
-- Reorganized package structure for improved modularity
-- Enhanced error handling and validation throughout
-- Improved logging and debugging capabilities
-
-### Performance
-
-- Forward Pass: 100% success rate (maintained from v2.1)
-- Learning Steps: 100% success rate (improved from 0% in v2.1)
-- Gradient Flow: 96%+ coverage
-- Production Ready: Yes (was No in v2.1)
-
-### Documentation
-
-- Complete README with usage examples
-- Comprehensive API reference
-- Training tutorials and examples
-- Architecture design documentation
-- Troubleshooting guide
-
-### Testing
-
-- Comprehensive benchmark suite
-- Unit tests for core components
-- Integration tests for training pipeline
-- Performance regression tests
+### Features
+- O(n) linear complexity SSM
+- Graph Neural Network integration
+- Deterministic learning approach
+- Multi-objective optimization
+- Production-ready training infrastructure
 
 ---
 
-## [2.1.0] - 2025-11-01 (Previous Version - Deprecated)
+## [Unreleased]
 
-### Issues in v2.1 (Resolved in v3.0)
-
-- Learning mechanism completely non-functional (0% success rate)
-- Missing type imports causing runtime errors
-- Demo scripts failing with KeyError
-- Documentation containing inaccurate success rate claims
-- Incomplete error handling
-- Absence of production-ready features
-
----
-
-## Migration Guide from v2.1 to v3.0
-
-### Breaking Changes
-
-1. Package Structure: Module organization has been revised
-   ```python
-   # v2.1
-   from dhc_ssm.integration.dhc_ssm_model import DHCSSMArchitecture
-   
-   # v3.0
-   from dhc_ssm import DHCSSMModel
-   ```
-
-2. Configuration: New configuration system implemented
-   ```python
-   # v2.1
-   from dhc_ssm.utils.config import get_cpu_optimized_config
-   
-   # v3.0 - Same import, enhanced features
-   from dhc_ssm import get_cpu_optimized_config
-   ```
-
-3. Training: New Trainer class introduced
-   ```python
-   # v3.0
-   from dhc_ssm import Trainer
-   trainer = Trainer(model, train_loader, val_loader, optimizer)
-   trainer.train(num_epochs=100)
-   ```
-
-### Upgrade Steps
-
-1. Uninstall previous version:
-   ```bash
-   pip uninstall dhc-ssm-architecture
-   ```
-
-2. Install new version:
-   ```bash
-   pip install dhc-ssm-architecture==3.0.0
-   ```
-
-3. Update imports in existing code (refer to breaking changes above)
-
-4. Test code with the new version
-
-### Recommended Features
-
-- Use Trainer class for training instead of manual loops
-- Use preset configurations for quick setup
-- Enable TensorBoard logging for monitoring
-- Use model checkpointing for long training runs
+### Planned
+- [ ] Advanced model improvement strategies (SSM-specific, GNN-specific)
+- [ ] Multi-task learning support
+- [ ] Distributed training support
+- [ ] Interactive visualization dashboard
+- [ ] Sphinx-based API documentation
+- [ ] More comprehensive benchmarks on real datasets
+- [ ] Docker containerization
+- [ ] Pre-trained model checkpoints
 
 ---
 
-## Future Releases
-
-### [3.1.0] - Planned
-
-- Pre-trained model weights
-- Extended benchmarks on standard datasets
-- ONNX export support
-- Additional example notebooks
-
-### [3.2.0] - Future
-
-- Multi-GPU training support
-- Model quantization
-- Mobile deployment support
-- Web demonstration
-
----
-
-For additional information, refer to the [README](README.md) and [documentation](docs/).
+[3.1.0]: https://github.com/sunghunkwag/DHC-SSM-AGI/compare/v3.0.0...v3.1.0
+[3.0.0]: https://github.com/sunghunkwag/DHC-SSM-AGI/releases/tag/v3.0.0
