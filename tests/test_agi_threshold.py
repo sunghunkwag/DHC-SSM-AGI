@@ -5,7 +5,7 @@ from dhc_ssm.agi.self_improvement import RecursiveSelfImprovement, ImprovementHy
 from dhc_ssm.agi.self_improvement_executor import SelfImprovementExecutor
 
 class DummyModel(nn.Module):
-    def __init__(self, input_dim=3072, output_dim=10):  # <-- FIXED!
+    def __init__(self, input_dim=3072, output_dim=10):
         super().__init__()
         self.linear = nn.Linear(input_dim, output_dim)
     def forward(self, x):
@@ -15,7 +15,7 @@ class DummyModel(nn.Module):
 def test_threshold_analysis():
     analyzer = RSIThresholdAnalyzer()
     for i in range(20):
-        epistemic = torch.tensor([0.9 - i*0.04])
+        epistemic = torch.tensor([0.9 - i * 0.04])
         aleatoric = torch.tensor([0.2])
         analyzer.measure(epistemic, aleatoric)
     result = analyzer.measurements[-1]
@@ -29,7 +29,7 @@ def test_self_improvement_cycle():
     out = executor.execute_cycle()
     assert out['threshold'] is not None
     assert out['action'] in ('update', 'rollback')
-    print(f"[test_self_improvement_cycle]: PASSED {out['action']} - new model out dim {executor.base_model.linear.out_features}")
+    print(f"[test_self_improvement_cycle]: PASSED {out['action']} - out dim {executor.base_model.linear.out_features}")
 
 def test_learning_success_rate():
     rsi = RecursiveSelfImprovement()
@@ -45,12 +45,10 @@ def test_full_improvement_scenario():
     model = DummyModel()
     val_data = (torch.randn(32, 3, 32, 32), torch.randint(0, model.linear.out_features, (32,)))
     executor = SelfImprovementExecutor(model, val_data)
-    # Run several improvement cycles
     actions = []
     for _ in range(5):
         out = executor.execute_cycle()
         actions.append(out['action'])
-    # At least one update expected if threshold is reachable
     assert len(actions) == 5
     latest_model = executor.base_model
     assert isinstance(latest_model, DummyModel)
