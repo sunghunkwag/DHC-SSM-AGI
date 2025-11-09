@@ -1,5 +1,6 @@
 """
-RSIThresholdAnalyzer: Complete Threshold Analysis with Diagnostics and Model Integration
+DHC-SSM-AGI: Robust Threshold Analyzer for Recursive Self Improvement (RSI)
+Full diagnostics, trend/convergence, and type-safe design.
 """
 import torch
 import torch.nn as nn
@@ -22,6 +23,7 @@ class ThresholdMeasurement:
     confidence: float
     converged: bool
     trend: str
+    idx: int  # Measurement index
 
 class RSIThresholdAnalyzer(nn.Module):
     def __init__(self, history_length: int = 100):
@@ -49,9 +51,9 @@ class RSIThresholdAnalyzer(nn.Module):
         window = window or min(20, len(self.measurements))
         recent = self.measurements[-window:]
         gammas = torch.tensor([m.gamma for m in recent])
-        slope = (gammas[-1] - gammas[0]) / len(gammas)
+        slope = (gammas[-1] - gammas[0]) / (len(gammas)-1)
         volatility = float(gammas.std().item())
-        converged = volatility < 0.03
+        converged = volatility < 0.03 and abs(slope) < 0.015
         trend = 'increasing' if slope > 0.01 else 'decreasing' if slope < -0.01 else 'stable'
         return { 'trend': trend, 'slope': float(slope), 'volatility': volatility, 'converged': converged }
 
@@ -69,7 +71,17 @@ class RSIThresholdAnalyzer(nn.Module):
         status = self.check_threshold(gamma, gamma_star)
         confidence = min(len(self.measurements)/self.history_length, 1.0)
         analysis = self.analyze_trend()
-        tm = ThresholdMeasurement(gamma, gamma_star, float(epistemic.mean().item()), float(aleatoric.mean().item()), status, confidence, analysis['converged'], analysis['trend'])
+        tm = ThresholdMeasurement(
+            gamma=gamma,
+            gamma_star=gamma_star,
+            epistemic=float(epistemic.mean().item()),
+            aleatoric=float(aleatoric.mean().item()),
+            status=status,
+            confidence=confidence,
+            converged=analysis['converged'],
+            trend=analysis['trend'],
+            idx=len(self.measurements)
+        )
         self.measurements.append(tm)
         if len(self.measurements) > self.history_length:
             self.measurements.pop(0)
@@ -81,6 +93,7 @@ class RSIThresholdAnalyzer(nn.Module):
         last = self.measurements[-1]
         analysis = self.analyze_trend()
         return {
+            'current_idx': last.idx,
             'current_gamma': last.gamma,
             'gamma_star_estimate': last.gamma_star,
             'threshold_status': last.status.value,
@@ -89,3 +102,7 @@ class RSIThresholdAnalyzer(nn.Module):
             'converged': analysis['converged'],
             'measurements': len(self.measurements),
         }
+
+    def export_history(self) -> List[Dict[str, any]]:
+        """Returns threshold history as list-of-dict for easy analysis/visualization."""
+        return [tm.__dict__ for tm in self.measurements]
