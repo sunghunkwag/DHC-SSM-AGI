@@ -34,6 +34,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest pytest-cov black flake8 mypy
+
+    - name: Install package in editable mode
+      run: pip install -e .
     
     - name: Run black (code formatting check)
       run: |
@@ -45,8 +48,7 @@ jobs:
         flake8 dhc_ssm/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     
     - name: Run pytest with coverage
-      run: |
-        pytest tests/ -v --cov=dhc_ssm --cov-report=xml --cov-report=term
+      run: pytest tests/ -v --cov=dhc_ssm --cov-report=xml --cov-report=term
     
     - name: Upload coverage to artifacts
       uses: actions/upload-artifact@v4
