@@ -4,7 +4,7 @@
 [![PyTorch 2.0+](https://img.shields.io/badge/pytorch-2.0+-red.svg)](https://pytorch.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Robust, fully type-safe research architecture featuring recursive self-improvement, **Nested Learning** from Google Research (NeurIPS 2025), adaptive threshold analysis, real uncertainty quantification, and extensive modular test suite.
+Robust, fully type-safe research architecture featuring recursive self-improvement, Nested Learning (Google Research, NeurIPS 2025), adaptive threshold analysis, real uncertainty quantification, and extensive modular test suite.
 
 ## Architecture Overview
 
@@ -32,33 +32,19 @@ Robust, fully type-safe research architecture featuring recursive self-improveme
 ───── Output: Predictions, Diagnostics, Learning Self-Metrics
 ```
 
-## 🚀 Automated CI/CD Notice
-
-### Automated CI/CD was removed from this repository as of November 2025.
-
-- **All GitHub Actions workflows (.github/workflows/ci.yml) were removed.**
-- **No automated test/build/deploy pipelines remain.**
-- This project is an experimental research codebase and automated build/test/coverage are intentionally disabled to avoid confusion about coverage, failure, and stability in early-phase research.
-
-Tests can and should still be run manually via `pytest`. CI/CD may return in future stable versions.
-
----
-
 ## Manual Testing
 
-### To run all tests locally:
+To run all tests locally:
 
 ```bash
 pytest tests/ -v
 ```
 
-You can still use coverage analysis and all unit tests exist, but results are not published online.
-
----
+Coverage analysis and all unit tests are available, but results are not published online or automated.
 
 ## Documentation & Contribution
-- All documentation for Nested Learning, design, and testing remains in the repo.
-- Experimental cycles and API/usage remain unchanged; see above for details on modules & usage.
+- All documentation for Nested Learning, design, and testing is included in the repo.
+- Experimental cycles and API/usage remain unchanged; see documentation files for module usage.
 
 ## Citation
 If you use this work in your research, please cite:
@@ -72,5 +58,4 @@ If you use this work in your research, please cite:
 }
 ```
 
----
-**Status**: Active Research | **CI/CD**: Disabled | **Manual Testing Only**
+**Status**: Active Research | CI/CD: Disabled | Manual Testing Only
