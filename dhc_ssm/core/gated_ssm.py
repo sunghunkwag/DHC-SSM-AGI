@@ -119,8 +119,10 @@ class GatedS6Layer(nn.Module):
             A_discrete = torch.exp(dt.unsqueeze(-1) * self.A)  # (batch, state_dim, state_dim)
             B_t = self.B(x_t)  # (batch, state_dim)
             
-            # State update
-            current_state = torch.einsum('bsd,bd->bs', A_discrete, current_state) + B_t
+            # State update - FIXED: Correct einsum for batch matrix multiplication
+            # A_discrete: (batch, state_dim, state_dim), current_state: (batch, state_dim)
+            # Result: (batch, state_dim)
+            current_state = torch.bmm(A_discrete, current_state.unsqueeze(-1)).squeeze(-1) + B_t
             
             # Output: y_t = C*s_t
             y_t = self.C(current_state)  # (batch, hidden_dim)
