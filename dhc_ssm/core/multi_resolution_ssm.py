@@ -57,9 +57,21 @@ class WaveletDecomposition(nn.Module):
                 # cDn: detail at level n (mid freq)
                 # cD1: finest detail (high freq)
                 
+                # Safe indexing with fallback
                 low_list.append(torch.tensor(coeffs[0], dtype=torch.float32))
-                mid_list.append(torch.tensor(coeffs[1], dtype=torch.float32))
-                high_list.append(torch.tensor(coeffs[2] if len(coeffs) > 2 else coeffs[1], dtype=torch.float32))
+                
+                # Handle cases where there might not be enough levels
+                if len(coeffs) > 1:
+                    mid_list.append(torch.tensor(coeffs[1], dtype=torch.float32))
+                else:
+                    mid_list.append(torch.tensor(coeffs[0], dtype=torch.float32))
+                
+                if len(coeffs) > 2:
+                    high_list.append(torch.tensor(coeffs[2], dtype=torch.float32))
+                elif len(coeffs) > 1:
+                    high_list.append(torch.tensor(coeffs[1], dtype=torch.float32))
+                else:
+                    high_list.append(torch.tensor(coeffs[0], dtype=torch.float32))
         
         # Stack and move to device
         # Note: Different resolutions have different lengths
@@ -196,9 +208,9 @@ class MultiResolutionSSM(nn.Module):
         out_low = self.ssm_low(low_freq)
         
         # Upsample to original resolution (interpolation)
-        out_high = F.interpolate(out_high.permute(0, 2, 1), size=seq_len, mode='linear').permute(0, 2, 1)
-        out_mid = F.interpolate(out_mid.permute(0, 2, 1), size=seq_len, mode='linear').permute(0, 2, 1)
-        out_low = F.interpolate(out_low.permute(0, 2, 1), size=seq_len, mode='linear').permute(0, 2, 1)
+        out_high = F.interpolate(out_high.permute(0, 2, 1), size=seq_len, mode='linear', align_corners=False).permute(0, 2, 1)
+        out_mid = F.interpolate(out_mid.permute(0, 2, 1), size=seq_len, mode='linear', align_corners=False).permute(0, 2, 1)
+        out_low = F.interpolate(out_low.permute(0, 2, 1), size=seq_len, mode='linear', align_corners=False).permute(0, 2, 1)
         
         out_high = self.upsample_high(out_high)
         out_mid = self.upsample_mid(out_mid)
