@@ -1,6 +1,6 @@
-# Core dependencies for DHC-SSM Architecture v3.0
-# Deterministic Hierarchical Causal State Space Model
-# Production-ready version with fixed learning mechanism
+# Core dependencies for DHC-SSM Architecture v4.0
+# Auto-Consolidating Gated Multi-Resolution State Space Model
+# with Self-Improving Architecture capabilities
 
 # Deep Learning Framework
 torch>=2.0.0,<3.0.0
@@ -11,8 +11,11 @@ torch-geometric>=2.3.0
 
 # Scientific Computing
 numpy>=1.24.0,<2.0.0
-scipy>=1.10.0
+scipy>=1.10.0  # Required for statistical testing in self-improvement
 scikit-learn>=1.3.0
+
+# Signal Processing (NEW in v4.0)
+PyWavelets>=1.4.0  # Required for multi-resolution SSM
 
 # Visualization and Analysis
 matplotlib>=3.5.0
